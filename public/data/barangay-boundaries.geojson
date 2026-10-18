@@ -1,0 +1,7 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "barangay_id": 1, "name": "Villa Kananga", "city": "Butuan City" }, "geometry": { "type": "Polygon", "coordinates": [[[125.5054, 8.9574], [125.5194, 8.9574], [125.5194, 8.9694], [125.5054, 8.9694], [125.5054, 8.9574]]] } },
+    { "type": "Feature", "properties": { "barangay_id": 3, "name": "Ampayon", "city": "Butuan City" }, "geometry": { "type": "Polygon", "coordinates": [[[125.5362, 8.9261], [125.5502, 8.9261], [125.5502, 8.9381], [125.5362, 8.9381], [125.5362, 8.9261]]] } }
+  ]
+}
