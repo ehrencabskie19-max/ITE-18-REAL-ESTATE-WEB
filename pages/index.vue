@@ -13,6 +13,11 @@ const agentQuery = ref('')
 const sellDialogOpen = ref(false)
 const sellSubmitted = ref(false)
 const sellForm = reactive({ name: '', email: '', phone: '', city: '', propertyType: 'house', details: '' })
+const accountDialogOpen = ref(false)
+const accountMode = ref<'login' | 'register'>('login')
+const accountForm = reactive({ name: '', email: '', password: '', confirmPassword: '' })
+const accountStatus = ref('')
+const accountStatusKind = ref<'info' | 'error'>('info')
 const mortgage = reactive({ price: 4850000, downPaymentPercent: 20, annualRate: 7, termYears: 20 })
 const mortgageLoan = computed(() => Math.max(0, mortgage.price * (1 - mortgage.downPaymentPercent / 100)))
 const mortgagePayment = computed(() => {
@@ -120,6 +125,28 @@ function showSellDialog() {
   sellDialogOpen.value = true
 }
 
+function showAccountDialog(mode: 'login' | 'register' = 'login') {
+  accountMode.value = mode
+  accountForm.name = ''
+  accountForm.email = ''
+  accountForm.password = ''
+  accountForm.confirmPassword = ''
+  accountStatus.value = ''
+  accountDialogOpen.value = true
+}
+
+function submitAccount() {
+  accountStatusKind.value = 'info'
+  if (accountMode.value === 'register' && accountForm.password !== accountForm.confirmPassword) {
+    accountStatusKind.value = 'error'
+    accountStatus.value = 'Passwords do not match.'
+    return
+  }
+  accountStatus.value = accountMode.value === 'login'
+    ? 'Demo only: sign-in is not connected.'
+    : 'Demo only: account creation is not connected.'
+}
+
 function submitSellRequest() {
   sellSubmitted.value = true
 }
@@ -133,6 +160,7 @@ function handleKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
     selected.value = null
     inquiryProperty.value = null
+    accountDialogOpen.value = false
   }
 }
 
@@ -144,9 +172,9 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
 })
 
-watch([selected, inquiryProperty], ([s, i]) => {
+watch([selected, inquiryProperty, accountDialogOpen], ([s, i, a]) => {
   if (import.meta.client) {
-    document.body.style.overflow = (s || i) ? 'hidden' : ''
+    document.body.style.overflow = (s || i || a) ? 'hidden' : ''
   }
 })
 </script>
@@ -155,13 +183,16 @@ watch([selected, inquiryProperty], ([s, i]) => {
   <div class="app-shell">
     <header class="topbar">
       <a class="brand" href="#" @click.prevent="selected = null">
-        <span class="brand-mark">C<span>&</span>S</span>
-        <span class="brand-name">CABODBOD <i>&</i> SETARIOS<small>REAL ESTATE</small></span>
+        <span class="brand-mark">KH</span>
+        <span class="brand-name">KayaHomes<small>REAL ESTATE</small></span>
       </a>
       <nav class="nav-links">
-        <a href="#properties" @click.prevent="showListView">Properties</a><a href="#properties" @click.prevent="showMapView">Map</a><a href="#mortgage">Mortgage</a><a href="#agents">Agents</a>
+        <a href="#properties" @click.prevent="showListView">Properties</a><a href="#properties" @click.prevent="showMapView">Map</a><a href="#mortgage">Mortgage</a><a href="#agents">Agents</a><a href="/portal">Portals</a>
       </nav>
-      <button class="nav-cta" @click="showSellDialog">List a property <span>↗</span></button>
+      <div class="topbar-actions">
+        <button class="account-trigger" @click="showAccountDialog()">Log in</button>
+        <button class="nav-cta" @click="showSellDialog">List a property <span>↗</span></button>
+      </div>
     </header>
 
     <main>
@@ -186,18 +217,17 @@ watch([selected, inquiryProperty], ([s, i]) => {
         <button class="sell-switch" @click="showSellDialog">Sell a property <span>↗</span></button>
       </section>
 
-      <section class="search-panel feature-search" aria-label="Search multiple listings">
-        <div class="search-field search-keyword"><label for="search">LOCATION OR KEYWORD</label><div class="input-with-icon"><span>⌕</span><input id="search" v-model="store.search" placeholder="City, barangay, property..."></div></div>
-        <div class="search-field"><label for="listing">LISTING TYPE</label><select id="listing" v-model="store.listingFilter"><option value="all">Buy or rent</option><option value="sale">For sale</option><option value="rent">For rent</option></select></div>
-        <div class="search-field"><label for="type">PROPERTY TYPE</label><select id="type" v-model="store.typeFilter"><option value="all">All types</option><option value="house">House</option><option value="condo">Condominium</option><option value="apartment">Apartment</option><option value="lot">Lot / Land</option></select></div>
-        <div class="search-field"><label for="city-filter">CITY / MUNICIPALITY</label><select id="city-filter" v-model="store.cityFilter"><option value="all">All locations</option><option v-for="city in store.citiesMunicipalities" :key="city.id" :value="String(city.id)">{{ city.name }}</option></select></div>
-        <div class="search-field"><label for="size-filter">PROPERTY SIZE</label><select id="size-filter" v-model="store.sizeFilter"><option value="all">Any size</option><option value="small">Small · under 80 m²</option><option value="medium">Medium · 80–150 m²</option><option value="large">Large · over 150 m²</option></select></div>
-        <div class="search-field"><label for="agency-filter">MLS NETWORK</label><select id="agency-filter" v-model="store.agencyFilter"><option value="all">All partner agencies</option><option v-for="agency in agencyOptions" :key="agency" :value="agency">{{ agency }}</option></select></div>
-        <button class="search-button" @click="scrollToProperties">Search listings <span>↗</span></button>
-      </section>
-
       <section id="properties" class="section properties-section">
         <div class="section-heading"><div><div class="eyebrow"><span></span> THE COLLECTION</div><h2>Find your <em>space.</em></h2><p>Explore places selected for the way you want to live.</p></div><button class="clear-btn" @click="clearFilters">Reset filters ↺</button></div>
+        <section class="search-panel feature-search" aria-label="Search multiple listings">
+          <div class="search-field search-keyword"><label for="search">LOCATION OR KEYWORD</label><div class="input-with-icon"><span>⌕</span><input id="search" v-model="store.search" placeholder="City, barangay, property..."></div></div>
+          <div class="search-field"><label for="listing">LISTING TYPE</label><select id="listing" v-model="store.listingFilter"><option value="all">Buy or rent</option><option value="sale">For sale</option><option value="rent">For rent</option></select></div>
+          <div class="search-field"><label for="type">PROPERTY TYPE</label><select id="type" v-model="store.typeFilter"><option value="all">All types</option><option value="house">House</option><option value="condo">Condominium</option><option value="apartment">Apartment</option><option value="lot">Lot / Land</option></select></div>
+          <div class="search-field"><label for="city-filter">CITY / MUNICIPALITY</label><select id="city-filter" v-model="store.cityFilter"><option value="all">All locations</option><option v-for="city in store.citiesMunicipalities" :key="city.id" :value="String(city.id)">{{ city.name }}</option></select></div>
+          <div class="search-field"><label for="size-filter">PROPERTY SIZE</label><select id="size-filter" v-model="store.sizeFilter"><option value="all">Any size</option><option value="small">Small · under 80 m²</option><option value="medium">Medium · 80–150 m²</option><option value="large">Large · over 150 m²</option></select></div>
+          <div class="search-field"><label for="agency-filter">MLS NETWORK</label><select id="agency-filter" v-model="store.agencyFilter"><option value="all">All partner agencies</option><option v-for="agency in agencyOptions" :key="agency" :value="agency">{{ agency }}</option></select></div>
+          <button class="search-button" @click="scrollToProperties">Search listings <span>↗</span></button>
+        </section>
         <div class="listing-toolbar feature-toolbar">
           <div class="toolbar-left"><span><strong>{{ store.filteredProperties.length }}</strong> listings in the exchange</span><button class="saved-filter" :class="{ active: store.onlyFavorites }" @click="toggleFavoritesView">♥ Saved ({{ store.favorites.length }})</button></div>
           <div class="view-switch" role="tablist" aria-label="Listing view"><button :class="{ active: viewMode === 'list' }" role="tab" :aria-selected="viewMode === 'list'" @click="viewMode = 'list'">List</button><button :class="{ active: viewMode === 'map' }" role="tab" :aria-selected="viewMode === 'map'" @click="viewMode = 'map'">Map</button></div>
@@ -246,7 +276,36 @@ watch([selected, inquiryProperty], ([s, i]) => {
       <section class="contact-banner"><div><div class="eyebrow light"><span></span> READY WHEN YOU ARE</div><h2>Your next chapter<br>starts with a <em>conversation.</em></h2></div><a href="#properties" class="btn-light" @click.prevent="showListView">Find your property ↗</a></section>
     </main>
 
-    <footer class="footer"><a class="brand footer-brand" href="#"><span class="brand-mark">C<span>&</span>S</span><span class="brand-name">CABODBOD <i>&</i> SETARIOS<small>REAL ESTATE</small></span></a><p>Find a place where life happens.</p><div>© 2026 Cabodbod & Setarios · Frontend demo</div></footer>
+    <footer class="footer"><a class="brand footer-brand" href="#"><span class="brand-mark">KH</span><span class="brand-name">KayaHomes<small>REAL ESTATE</small></span></a><p>Find a place where life happens.</p><div>© 2026 KayaHomes Real Estate · Frontend demo</div></footer>
+
+    <div v-if="accountDialogOpen" class="modal-backdrop" @click.self="accountDialogOpen = false">
+      <section class="inquiry-modal account-modal" role="dialog" aria-modal="true" aria-labelledby="account-title">
+        <button class="modal-close" aria-label="Close account dialog" @click="accountDialogOpen = false">×</button>
+        <div class="eyebrow"><span></span> KAYAHOMES ACCOUNT</div>
+        <h2 id="account-title">{{ accountMode === 'login' ? 'Welcome back.' : 'Create an account.' }}</h2>
+        <div class="account-tabs" role="tablist" aria-label="Choose login or registration">
+          <button type="button" role="tab" :aria-selected="accountMode === 'login'" :class="{ active: accountMode === 'login' }" @click="accountMode = 'login'; accountStatus = ''">Log in</button>
+          <button type="button" role="tab" :aria-selected="accountMode === 'register'" :class="{ active: accountMode === 'register' }" @click="accountMode = 'register'; accountStatus = ''">Register</button>
+        </div>
+        <form @submit.prevent="submitAccount">
+          <template v-if="accountMode === 'register'">
+            <label for="account-name">Full name</label>
+            <input id="account-name" v-model="accountForm.name" required autocomplete="name" placeholder="Your full name">
+          </template>
+          <label for="account-email">Email address</label>
+          <input id="account-email" v-model="accountForm.email" required type="email" autocomplete="email" placeholder="you@example.com">
+          <label for="account-password">Password</label>
+          <input id="account-password" v-model="accountForm.password" required type="password" minlength="8" :autocomplete="accountMode === 'login' ? 'current-password' : 'new-password'" placeholder="At least 8 characters">
+          <template v-if="accountMode === 'register'">
+            <label for="account-confirm-password">Confirm password</label>
+            <input id="account-confirm-password" v-model="accountForm.confirmPassword" required type="password" minlength="8" autocomplete="new-password" placeholder="Enter your password again">
+          </template>
+          <p v-if="accountStatus" class="account-status" :class="{ error: accountStatusKind === 'error' }" role="status">{{ accountStatus }}</p>
+          <button class="btn-primary full-btn" type="submit">{{ accountMode === 'login' ? 'Log in' : 'Create account' }} <span>↗</span></button>
+        </form>
+        <small class="account-note">Demo interface only. No credentials are stored or verified.</small>
+      </section>
+    </div>
 
     <div v-if="selected" class="modal-backdrop" @click.self="selected = null" @keydown.esc="selected = null">
       <section class="property-modal" role="dialog" aria-modal="true" :aria-label="selected.title">

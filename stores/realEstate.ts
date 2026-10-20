@@ -57,7 +57,7 @@ export const useRealEstateStore = defineStore('realEstate', {
       { id: 4, name: 'Demo Buyer', email: 'buyer@example.test', phone_number: '', role: 'user' as const, account_status: 'active' as const, created_at: demoTimestamp, updated_at: demoTimestamp }
     ] as User[],
     professionalProfiles: [
-      { id: 1, user_id: 1, license_number: 'PRC-RE-10241', agency_name: 'Cabodbod & Setarios Realty', phone: '+63 917 100 1001', verification_status: 'verified' as const, created_at: demoTimestamp, updated_at: demoTimestamp },
+      { id: 1, user_id: 1, license_number: 'PRC-RE-10241', agency_name: 'KayaHomes Real Estate', phone: '+63 917 100 1001', verification_status: 'verified' as const, created_at: demoTimestamp, updated_at: demoTimestamp },
       { id: 2, user_id: 2, license_number: 'PRC-RE-20418', agency_name: 'Northstar Property Network', phone: '+63 917 100 1002', verification_status: 'verified' as const, created_at: demoTimestamp, updated_at: demoTimestamp },
       { id: 3, user_id: 3, license_number: 'PRC-RE-31908', agency_name: 'Vista Home Realty', phone: '+63 917 100 1003', verification_status: 'verified' as const, created_at: demoTimestamp, updated_at: demoTimestamp }
     ] as ProfessionalProfile[],

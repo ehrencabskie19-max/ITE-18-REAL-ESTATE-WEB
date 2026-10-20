@@ -52,3 +52,27 @@ body,body .app-shell *{font-family:var(--font-simple)}
 @media(max-width:420px){.feature-search{grid-template-columns:1fr}.feature-search .search-keyword,.feature-search .search-button{grid-column:auto}.mortgage-inputs{grid-template-columns:1fr}.view-switch{width:100%}.view-switch button{flex:1}.property-map{height:290px}}
 
 body,body .app-shell *{font-family:var(--font-simple);font-style:normal}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.account-trigger{border:1px solid var(--line);background:#fff;color:var(--green);padding:13px 15px;font-size:12px;font-weight:700}
+.account-modal{width:min(450px,100%);padding:34px}
+.account-modal .eyebrow{margin-bottom:12px}
+.account-modal h2{font-family:var(--font-simple);font-size:28px;font-weight:700;margin:0}
+.account-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:24px 0 20px;background:var(--cream)}
+.account-tabs button{border:0;background:transparent;color:var(--muted);padding:10px;font-size:12px;font-weight:700}
+.account-tabs button.active{background:var(--green);color:#fff}
+.account-modal form{display:grid;gap:7px}
+.account-modal form label{display:grid;gap:7px;margin:7px 0;color:var(--ink);font-size:11px;font-weight:700}
+.account-modal form input{width:100%;padding:12px;border:1px solid #dedfd7;background:#fff;font-size:12px;outline-color:var(--green)}
+.account-modal .account-status{padding:10px;background:#edf8ef;color:#246c36;font-size:11px}
+.account-modal .account-status.error{background:#fff0f0;color:#a72b2b}
+.account-note{display:block;margin-top:16px;color:var(--muted);font-size:10px;line-height:1.6}
+@media(max-width:680px){.topbar-actions{gap:6px}.account-trigger{padding:10px;font-size:10px}}
+@media(max-width:420px){.topbar{padding:0 3%}.brand{gap:7px}.brand-name{font-size:9px}.brand-name small{font-size:7px;letter-spacing:2px}.account-trigger{padding:8px 7px}.topbar-actions .nav-cta{padding:9px 7px}}
+.nav-cta,.hero-actions .btn-primary{border-radius:10px}
+.card-image{box-shadow:0 8px 20px rgba(32,42,39,.16)}
+.hero-copy>p{color:var(--ink);font-size:16px}
+.properties-section>.search-panel{width:100%;margin:30px 0 0}
+.section-heading p,.mortgage-intro p,.mortgage-intro small,.about-copy>p,.agent-search,.agent-search input,.agent-search input::placeholder{color:#000}
+.agent-search,.agent-search input::placeholder{color:var(--muted)}
+.app-shell{overflow:clip}.topbar{position:sticky;top:0;z-index:15}
+

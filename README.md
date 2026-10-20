@@ -1,4 +1,4 @@
-# Cabodbod & Setarios — Real Estate Frontend
+# KayaHomes Real Estate
 
 A responsive Nuxt 3 + Vue 3 frontend concept based on the supplied HomeQuest ERD.
 
